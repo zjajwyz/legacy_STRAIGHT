@@ -1,0 +1,116 @@
+%% Reading speech from file
+sa = createMobject;
+sha = createMobject;
+[x, fs] = audioread('sa.wav')
+sa = updateFieldOfMobject(sa,'waveform',x)
+[x, fs] = audioread('sha.wav')
+sha = updateFieldOfMobject(sha,'waveform',x)
+
+%% Extractin parameters
+sa = executeSTRAIGHTanalysisM(sa);
+sha = executeSTRAIGHTanalysisM(sha);
+save sa sa
+save sha sha
+
+%% Anchoring points setting (part1), but I would rather use Praat to measure the parameters and then input into the rawanch.mat file
+displayMobject(sa, 'spectrogram', 'sa');
+axis([0 1000 0 10000]);
+rawanch = ginput
+[dm1, indsrt] = sort(rawanch(:,1));
+
+%%
+sa = setAnchorFromRawAnchor(sa, rawanch);
+sa.anchorTimeLocation
+sa.anchorFrequency
+%% edit rawanch2.mat first. Again, use Praat to measure first.
+sha = setAnchorFromRawAnchor(sha, rawanch2);
+sha.anchorTimeLocation
+sha.anchorFrequency
+
+%% Morphing 
+
+mObjectdmy = timeFrequencySTRAIGHTmorphing(sa, sha, 0.5, 'log');
+displayMobject(mObjectdmy, 'anchorTimeLocation','Log');
+axis([0 800 0 10000])
+syneu = executeSTRAIGHTsynthesisM(mObjectdmy);
+
+%%
+syneu = syneu./(max(abs(syneu)));
+audiowrite('sa_sha50.wav', syneu, fs)
+
+%% compute a the 7-stepped continuum [sa]-[sha] using logarithmic interpolation
+% the n-th step uses a weight of (n-1)/6, i.e., 0, 0.167, 0.333, 0.500, 0.667,
+% 0.833, 1
+synObject = timeFrequencySTRAIGHTmorphing(sa, sha, 0, 'log');
+syneu = executeSTRAIGHTsynthesisM(synObject);
+syneu = syneu./(max(abs(syneu)));
+audiowrite('sa_sha_step1.wav', syneu, fs)
+
+synObject = timeFrequencySTRAIGHTmorphing(sa, sha, 0.167, 'log');
+syneu = executeSTRAIGHTsynthesisM(synObject);
+syneu = syneu./(max(abs(syneu)));
+audiowrite('sa_sha_step2.wav', syneu, fs)
+
+synObject = timeFrequencySTRAIGHTmorphing(sa, sha, 0.333, 'log');
+syneu = executeSTRAIGHTsynthesisM(synObject);
+syneu = syneu./(max(abs(syneu)));
+audiowrite('sa_sha_step3.wav', syneu, fs)
+
+synObject = timeFrequencySTRAIGHTmorphing(sa, sha, 0.500, 'log');
+syneu = executeSTRAIGHTsynthesisM(synObject);
+syneu = syneu./(max(abs(syneu)));
+audiowrite('sa_sha_step4.wav', syneu, fs)
+
+synObject = timeFrequencySTRAIGHTmorphing(sa, sha, 0.667, 'log');
+syneu = executeSTRAIGHTsynthesisM(synObject);
+syneu = syneu./(max(abs(syneu)));
+audiowrite('sa_sha_step5.wav', syneu, fs)
+
+synObject = timeFrequencySTRAIGHTmorphing(sa, sha, 0.833, 'log');
+syneu = executeSTRAIGHTsynthesisM(synObject);
+syneu = syneu./(max(abs(syneu)));
+audiowrite('sa_sha_step6.wav', syneu, fs)
+
+synObject = timeFrequencySTRAIGHTmorphing(sa, sha, 1, 'log');
+syneu = executeSTRAIGHTsynthesisM(synObject);
+syneu = syneu./(max(abs(syneu)));
+audiowrite('sa_sha_step7.wav', syneu, fs)
+
+%%
+%% compute a the 7-stepped continuum [sa]-[sha] using linear interpolation
+% the n-th step uses a weight of (n-1)/6, i.e., 0, 0.167, 0.333, 0.500, 0.667,
+% 0.833, 1
+synObject = timeFrequencySTRAIGHTmorphing(sa, sha, 0, 'linear');
+syneu = executeSTRAIGHTsynthesisM(synObject);
+syneu = syneu./(max(abs(syneu)));
+audiowrite('sa_sha_step1.wav', syneu, fs)
+
+synObject = timeFrequencySTRAIGHTmorphing(sa, sha, 0.167, 'linear');
+syneu = executeSTRAIGHTsynthesisM(synObject);
+syneu = syneu./(max(abs(syneu)));
+audiowrite('sa_sha_step2.wav', syneu, fs)
+
+synObject = timeFrequencySTRAIGHTmorphing(sa, sha, 0.333, 'linear');
+syneu = executeSTRAIGHTsynthesisM(synObject);
+syneu = syneu./(max(abs(syneu)));
+audiowrite('sa_sha_step3.wav', syneu, fs)
+
+synObject = timeFrequencySTRAIGHTmorphing(sa, sha, 0.500, 'linear');
+syneu = executeSTRAIGHTsynthesisM(synObject);
+syneu = syneu./(max(abs(syneu)));
+audiowrite('sa_sha_step4.wav', syneu, fs)
+
+synObject = timeFrequencySTRAIGHTmorphing(sa, sha, 0.667, 'linear');
+syneu = executeSTRAIGHTsynthesisM(synObject);
+syneu = syneu./(max(abs(syneu)));
+audiowrite('sa_sha_step5.wav', syneu, fs)
+
+synObject = timeFrequencySTRAIGHTmorphing(sa, sha, 0.833, 'linear');
+syneu = executeSTRAIGHTsynthesisM(synObject);
+syneu = syneu./(max(abs(syneu)));
+audiowrite('sa_sha_step6.wav', syneu, fs)
+
+synObject = timeFrequencySTRAIGHTmorphing(sa, sha, 1, 'linear');
+syneu = executeSTRAIGHTsynthesisM(synObject);
+syneu = syneu./(max(abs(syneu)));
+audiowrite('sa_sha_step7.wav', syneu, fs)
